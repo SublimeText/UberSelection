@@ -2,51 +2,52 @@ import sublime, sublimeplugin
 import functools
 import re
 
-
-# My own stuff
+# My own modules
 import us_range_parser
 import us_line_numbers
 import us_commands
 import selections
 import actions
 
-def parseRange(r):
-    parsed = us_range_parser.parse(r).range
-    if not parsed[1]:
-        parsed[1] = parsed[0]
+_PACKAGE_NAME = "Uberselection"
 
-    return us_line_numbers.getLineNrs(parsed[0], parsed[1])
+def parseRange(r):
+    parsed = us_range_parser.parse(r)
+    rng = parsed.range
+    commands = us_range_parser.parse(r).cmds
+    # FIXME: if not rng1 is None
+    if not rng[1]:
+        rng[1] = rng[0]
+
+    return us_line_numbers.getLineNrs(rng[0], rng[1]), commands
 
 
 class UberSelectionCommand(sublimeplugin.TextCommand):
+    """Executes vim ex-mode like commands.
+    """
+
     def run(self, view, args):
         self.showInputPanel(view)
 
     def showInputPanel(self, view):
-        view.window().showInputPanel("Uberselection",
-                                        getattr(self, "lastCmdLine", ""),
+        view.window().showInputPanel("Uberselection CMD",
+                                        getattr(self, 'lastCmdLine', ''),
                                         functools.partial(self.onDone, view),
-                                        functools.partial(self.onChange, view),
+                                        None,
                                         None
                                     )
 
-    def onChange(self, view, s):
-        pass
-
     def onDone(self, view, s):
-        r = parseRange(s)
+        rng, cmds = parseRange(s)
         self.lastCmdLine = s
-        selections.selectSpanningLines(r, view)
-        rrr = us_range_parser.parse(s).cmds
-        if rrr:
-            for the_cmd in rrr:
-                parsed_cmd = us_commands.parse(the_cmd)
-                if not parsed_cmd: break
-                print parsed_cmd
-                if parsed_cmd[0] == "-":
-                    print ("%s" % (str(parsed_cmd)))
-                    actions.exclude(view, parsed_cmd[1])
-                if parsed_cmd[0] == "rep":
-                    actions.replace(view, parsed_cmd[1], parsed_cmd[2])
+        selections.selectSpanningLines(rng, view)
+
+        for cmd in cmds:
+            parsed_cmd = us_commands.parse(cmd)
+            if not parsed_cmd: break
+            if parsed_cmd[0] == "-":
+                actions.exclude(view, parsed_cmd[1])
+            if parsed_cmd[0] == "rep":
+                actions.replace(view, parsed_cmd[1], parsed_cmd[2])
 
         self.showInputPanel(view)

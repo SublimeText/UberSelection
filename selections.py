@@ -4,7 +4,9 @@ def move(view, backward=False, amount=1):
     """Wrapper around built-in command `move`. A bug in Sublime seems to prevent
     using this command with amounts larger than 1.
     """
-    if amount > 750: amount = 0
+    if amount > 1000:
+            sublime.errorMessage("Uberselection: Current limit for ranges is set to 1000.")
+            amount = 0
     if not amount == 0:
         for time in range(amount):
             view.runCommand('move lines', [str(1 if not backward else -1)])
