@@ -39,11 +39,12 @@ class UberSelectionCommand(sublimeplugin.TextCommand):
 
         if trans:
             aRange, cmds = trans.range, trans.operator
-            selections.selectSpanningLines(grammar.parseRange(aRange), view)
+            if any([aRange, cmds]):
+                selections.selectSpanningLines(grammar.parseRange(aRange), view)
 
-            for cmd in cmds:
-                if "".join(cmd.command) == "-V":
-                    actions.exclude(view, cmd)
-                if "".join(cmd.command) == "V":
-                    actions.include(view, cmd)
+                for cmd in cmds:
+                    if "".join(cmd.command) == "-V":
+                        actions.exclude(view, cmd)
+                    if "".join(cmd.command) == "V":
+                        actions.include(view, cmd)
             self.showInputPanel(view)

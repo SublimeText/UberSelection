@@ -14,7 +14,7 @@ the_range = p.delimitedList(p.Group(number) | p.Group(anchor) | p.Group(range_op
 selection = p.Group(p.Optional("-") + "V").setResultsName("command") + p.Group(p.QuotedString(quoteChar="/", escChar="\\")).setResultsName("argument") + p.Group(p.Optional(p.Word("iS"))).setResultsName("flags")
 selection = p.delimitedList(p.Group(selection), delim=";")
 
-trans = p.Group(p.Optional(the_range)).setResultsName("range") + p.Group(selection).setResultsName("operator")
+trans = p.Group(p.Optional(the_range)).setResultsName("range") + p.Group(p.Optional(selection)).setResultsName("operator")
 cmd = p.Word("weqnN") | "ls"
 cmd = cmd + p.Optional(p.Word(p.alphas))
 
