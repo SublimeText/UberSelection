@@ -41,9 +41,7 @@ class UberSelectionCommand(sublimeplugin.TextCommand):
             aRange, cmds = trans.range, trans.operator
             selections.selectSpanningLines(grammar.parseRange(aRange), view)
 
-            print trans.operator
             for cmd in cmds:
-                print cmd
                 if "".join(cmd.command) == "-V":
                     actions.exclude(view, cmd)
                 if "".join(cmd.command) == "V":
