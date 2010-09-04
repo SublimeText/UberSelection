@@ -10,7 +10,7 @@ fs = "/" + p.Word(p.alphas) + "/" + opt_modif
 bs = "?" + p.Word(p.alphas) + "?" + opt_modif
 
 the_range = p.delimitedList(p.Group(hrng) | p.Group(fs) | p.Group(bs) | p.Group(nrng))
-cmd = p.Optional(p.Literal("-")) + p.Literal("sel") + "/" + p.CharsNotIn("/") + "/" + p.Group(p.Optional(p.Word("i")))
+cmd = p.Optional(p.Literal("-")) + p.Literal("V") + "/" + p.CharsNotIn("/") + "/" + p.Group(p.Optional(p.Word("i")))
 cmd2 = p.Literal("rep") + "/" + p.CharsNotIn("/") + "/" + p.CharsNotIn("/") + "/" + p.Group(p.Optional(p.Word("i")))
 grammar = simple_cmd.setResultsName("cmd") | p.Group(p.Optional(the_range)).setResultsName("range") + p.Group(p.delimitedList(p.Group(p.Optional(cmd | cmd2)), delim=";")).setResultsName("cmds")
 

@@ -1,5 +1,6 @@
 import sublime
 
+# TODO: add what=lines arg
 def move(view, backward=False, amount=1):
     """Wrapper around built-in command `move`. A bug in Sublime seems to prevent
     using this command with amounts larger than 1.

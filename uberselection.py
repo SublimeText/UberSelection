@@ -8,26 +8,9 @@ import us_line_numbers
 import us_commands
 import selections
 import actions
+import grammar
 
 _PACKAGE_NAME = "Uberselection"
-
-def parseRange(r):
-
-    parsed = us_range_parser.parse(r)
-
-    simple_cmd = parsed.cmd
-    rng = parsed.range
-    commands = us_range_parser.parse(r).cmds
-
-    # FIXME: if not rng1 is None
-    lineNos = None
-    if rng:
-        if not rng[1]:
-            rng[1] = rng[0]
-        lineNos = us_line_numbers.getLineNrs(rng[0], rng[1])
-
-    return simple_cmd, lineNos, commands
-
 
 class UberSelectionCommand(sublimeplugin.TextCommand):
     """Executes vim ex-mode like commands.
@@ -45,19 +28,24 @@ class UberSelectionCommand(sublimeplugin.TextCommand):
                                     )
 
     def onDone(self, view, s):
-        simple_cmd, rng, cmds = parseRange(s)
+        tokens = grammar.grammar.parseString(s)
+        vim_cmd, trans = tokens.vim_cmd, tokens.trans
+
         self.lastCmdLine = s
 
-        if simple_cmd:
-            actions.dispatch(simple_cmd, view)
-        else:
-            selections.selectSpanningLines(rng, view)
+        if vim_cmd:
+            # TODO vim_cmd is a list!!
+            actions.dispatch(vim_cmd[0], view)
 
+        if trans:
+            aRange, cmds = trans.range, trans.operator
+            selections.selectSpanningLines(grammar.parseRange(aRange), view)
+
+            print trans.operator
             for cmd in cmds:
-                parsed_cmd = us_commands.parse(cmd)
-                if not parsed_cmd: break
-                if parsed_cmd[0] == "-":
-                    actions.exclude(view, parsed_cmd[1])
-                if parsed_cmd[0] == "rep":
-                    actions.replace(view, parsed_cmd[1], parsed_cmd[2])
+                print cmd
+                if "".join(cmd.command) == "-V":
+                    actions.exclude(view, cmd)
+                if "".join(cmd.command) == "V":
+                    actions.include(view, cmd)
             self.showInputPanel(view)
