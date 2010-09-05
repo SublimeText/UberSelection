@@ -6,7 +6,7 @@ import re
 import us_range_parser
 import us_line_numbers
 import us_commands
-import selections
+import selection
 import actions
 import grammar
 
@@ -40,7 +40,7 @@ class UberSelectionCommand(sublimeplugin.TextCommand):
         if trans:
             aRange, cmds = trans.range, trans.operator
             if any([aRange, cmds]):
-                selections.selectSpanningLines(grammar.parseRange(aRange), view)
+                selection.selectSpanningLines(grammar.parseRange(aRange), view)
 
                 for cmd in cmds:
                     if "".join(cmd.command) == "-V":

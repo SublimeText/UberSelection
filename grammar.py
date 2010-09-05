@@ -15,7 +15,7 @@ the_range = p.delimitedList(p.Group(number) | p.Group(anchor) | p.Group(range_op
 selection = p.Group(p.Optional("-") + "V").setResultsName("command") + p.Group(p.QuotedString(quoteChar="/", escChar="\\")).setResultsName("argument") + p.Group(p.Optional(p.Word("iS"))).setResultsName("flags")
 selection = p.delimitedList(p.Group(selection), delim=";")
 
-trans = p.Group(p.Optional(the_range)).setResultsName("range") + p.Group(p.Optional(selection)).setResultsName("operator")
+trans = p.Group(p.Optional(the_range)).setResultsName("range") + p.Group(selection).setResultsName("operator")
 cmd = p.Word("weqnN") | "ls"
 cmd = cmd + p.Optional(p.Word(p.alphas))
 
@@ -24,7 +24,6 @@ grammar = cmd.setResultsName("vim_cmd") | trans.setResultsName("trans")
 def parse(this):
     tokens = grammar.parseString(this)
     vim_cmd, trans = tokens.vim_cmd, tokens.trans
-    print vim_cmd, "///", trans
     if vim_cmd:
         return
 

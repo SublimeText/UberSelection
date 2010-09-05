@@ -1,4 +1,3 @@
-import sublime
 
 def findLine(view, start=0, end=-1, target=0):
     """Performs a binary search to find line number `target`.
@@ -24,21 +23,3 @@ def findLine(view, start=0, end=-1, target=0):
             return findLine(view, guessed_pos, end, target)
         else:
             return findLine(view, start, guessed_pos, target)
-
-
-def resetSels(view, default=(0, 0)):
-    """
-    Clears the selected regions and adds the `default` region to the
-    selection.
-    """
-    # TODO: make a decorator @resettingSels
-    view.sel().clear()
-    view.sel().add(sublime.Region(*default))
-
-def selectSpanningLines(lines, view):
-    """Selects from lines[0].begin() to lines[1].end()
-    """
-    startPoint, endPoint = findLine(view, target=min(lines)), view.line(findLine(view, target=max(lines))).end()
-
-    view.sel().clear()
-    view.sel().add(sublime.Region(startPoint, endPoint))
