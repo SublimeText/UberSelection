@@ -37,7 +37,6 @@ class UberSelectionCommand(sublimeplugin.TextCommand):
 
         if trans:
             aRange, cmds = trans.range, trans.operator
-            print aRange
             if any([aRange, cmds]):
                 selection.selectSpanningLines(grammar.parseRange(aRange), view)
 

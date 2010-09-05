@@ -1,5 +1,6 @@
 import re
 import sublime
+import selection
 
 def dispatch(cmd, *args):
     if cmd in CMDS["simple_cmds"].keys():
