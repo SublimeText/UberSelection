@@ -60,7 +60,7 @@ def parseRangePart(part):
         return int(mainPart) + modif
 
     if mainPart in ('$', '.'):
-        return calculateRelativeRef(mainPart) + modif
+        return location.calculateRelativeRef(mainPart) + modif
 
     if mainPart.startswith('/') or mainPart.startswith('?'):
         return location.search(mainPart[1:-1], mainPart.startswith('?')) + modif
