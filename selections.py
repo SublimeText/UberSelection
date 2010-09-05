@@ -21,9 +21,9 @@ def findLine(view, start=0, end=-1, target=0):
         return view.line(guessed_pos).begin()
     else:
         if view.rowcol(guessed_pos)[0] + 1 < target:
-            return find_line(view, guessed_pos, end, target)
+            return findLine(view, guessed_pos, end, target)
         else:
-            return find_line(view, start, guessed_pos, target)
+            return findLine(view, start, guessed_pos, target)
 
 
 def resetSels(view, default=(0, 0)):

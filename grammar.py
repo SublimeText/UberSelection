@@ -1,4 +1,5 @@
 import pyparsing as p
+import sublime
 
 offset = p.Optional(p.Group(p.Word("+-", max=1) + p.Word(p.nums)))
 number = p.Word(p.nums) + offset
@@ -63,15 +64,17 @@ def parseRangePart(part):
         return search(mainPart[1:-1], mainPart.startswith("?")) + modif
 
 def calculateRelativeRef(where):
+    view = sublime.activeWindow().activeView()
     if where == "$":
-        return 9000
+        return view.rowcol(view.size())[0] + 1
     if where == ".":
-        # return current line
-        return 1000
+        return view.rowcol(view.sel()[0].begin())[0] + 1
 
 def search(what, backward=False):
+    view = sublime.activeWindow().activeView()
     if not backward:
-        return 4000
+        reg = view.find(what, view.sel()[0].begin())
+        return (view.rowcol(reg.begin())[0] + 1) if reg else calculateRelativeRef(".")
     else:
         return 5000
 
