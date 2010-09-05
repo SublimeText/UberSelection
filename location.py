@@ -1,3 +1,6 @@
+import sublime
+# import grammar
+import re
 
 def findLine(view, start=0, end=-1, target=0):
     """Performs a binary search to find line number `target`.
@@ -23,3 +26,33 @@ def findLine(view, start=0, end=-1, target=0):
             return findLine(view, guessed_pos, end, target)
         else:
             return findLine(view, start, guessed_pos, target)
+
+def search(what, backward=False):
+    view = sublime.activeWindow().activeView()
+
+    if not backward:
+        reg = view.find(what, view.sel()[0].begin())
+        return (view.rowcol(reg.begin())[0] + 1) if reg else calculateRelativeRef('.')
+
+    else:
+        sublime.statusMessage("Uberselection: performing reverse search...")
+        currLine = calculateRelativeRef('.') - 1
+        bkup = view.sel()[0]
+
+        while currLine > 0:
+            if re.search(what, view.substr(view.line(view.sel()[0].begin()))):
+                view.sel().clear()
+                view.sel().add(bkup)
+                return currLine + 1
+
+            view.runCommand('move', ['lines', '-1'])
+            currLine -= 1
+
+        return view.rowcol(bkup.begin())[0] + 1
+
+def calculateRelativeRef(where):
+    view = sublime.activeWindow().activeView()
+    if where == '$':
+        return view.rowcol(view.size())[0] + 1
+    if where == '.':
+        return view.rowcol(view.sel()[0].begin())[0] + 1

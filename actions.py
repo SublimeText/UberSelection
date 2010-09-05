@@ -17,14 +17,19 @@ def exclude(view, cmd):
         if re.search("%s" % what, view.substr(r), flags):
             view.sel().subtract(r)
 
+    view.show(view.sel())
+
 def include(view, cmd):
     view.runCommand("splitSelectionIntoLines")
     what = cmd.argument[0]
     flags = 0
     flags |= re.IGNORECASE if "i" in list(cmd.flags) else 0
+
     for r in reversed(view.sel()):
         if not re.search("%s" % what, view.substr(r), flags):
             view.sel().subtract(r)
+
+    view.show(view.sel())
 
 def replace(view, what, with_this):
     view.runCommand("splitSelectionIntoLines")
