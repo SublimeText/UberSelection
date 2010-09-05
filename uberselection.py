@@ -2,13 +2,10 @@ import sublime, sublimeplugin
 import functools
 import re
 
-# My own modules
-import us_range_parser
-import us_line_numbers
-import us_commands
-import selections
+import selection
 import actions
 import grammar
+import pyparsing
 
 _PACKAGE_NAME = "Uberselection"
 
@@ -20,18 +17,19 @@ class UberSelectionCommand(sublimeplugin.TextCommand):
         self.showInputPanel(view)
 
     def showInputPanel(self, view):
-        view.window().showInputPanel("Uberselection CMD",
-                                        getattr(self, 'lastCmdLine', ''),
-                                        functools.partial(self.onDone, view),
-                                        None,
-                                        None
+        view.window().showInputPanel("Uberselection CMD", getattr(self, 'lastCmdLine', ''),
+                                        functools.partial(self.onDone, view), None, None
                                     )
 
     def onDone(self, view, s):
-        tokens = grammar.grammar.parseString(s)
-        vim_cmd, trans = tokens.vim_cmd, tokens.trans
-
-        self.lastCmdLine = s
+        try:
+            tokens = grammar.grammar.parseString(s)
+            vim_cmd, trans = tokens.vim_cmd, tokens.trans
+        except pyparsing.ParseException:
+            sublime.statusMessage("Uberselection: Error parsing command string.")
+            return
+        finally:
+            self.lastCmdLine = s
 
         if vim_cmd:
             # TODO vim_cmd is a list!!
@@ -39,12 +37,16 @@ class UberSelectionCommand(sublimeplugin.TextCommand):
 
         if trans:
             aRange, cmds = trans.range, trans.operator
+            print aRange
             if any([aRange, cmds]):
-                selections.selectSpanningLines(grammar.parseRange(aRange), view)
+                selection.selectSpanningLines(grammar.parseRange(aRange), view)
 
                 for cmd in cmds:
-                    if "".join(cmd.command) == "-V":
+                    if ''.join(cmd.command) == '-V':
                         actions.exclude(view, cmd)
-                    if "".join(cmd.command) == "V":
+                    if ''.join(cmd.command) == 'V':
                         actions.include(view, cmd)
+                    if ''.join(cmd.command) == 's':
+                        actions.replace(view, cmd.search[0], cmd.replace[0])
+
             self.showInputPanel(view)
