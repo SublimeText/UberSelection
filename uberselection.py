@@ -12,18 +12,20 @@ _PACKAGE_NAME = "Uberselection"
 class UberSelectionCommand(sublimeplugin.TextCommand):
     """Executes vim ex-mode like commands.
     """
+    def __init__(self):
+        self.grammar = grammar.generate()
 
     def run(self, view, args):
         self.showInputPanel(view)
 
     def showInputPanel(self, view):
         view.window().showInputPanel("Uberselection CMD", getattr(self, 'lastCmdLine', ''),
-                                        functools.partial(self.onDone, view), None, None
-                                    )
+                                        functools.partial(self.onDone, view), None, None)
 
     def onDone(self, view, s):
+
         try:
-            tokens = grammar.grammar.parseString(s)
+            tokens = self.grammar.parseString(s)
             vim_cmd, trans = tokens.vim_cmd, tokens.trans
         except pyparsing.ParseException:
             sublime.statusMessage("Uberselection: Error parsing command string.")
@@ -46,6 +48,11 @@ class UberSelectionCommand(sublimeplugin.TextCommand):
                     if ''.join(cmd.command) == 'V':
                         actions.include(view, cmd)
                     if ''.join(cmd.command) == 's':
-                        actions.replace(view, cmd.search[0], cmd.replace[0])
+                        view.runCommand("uberSelectionReplace", [cmd.search[0], cmd.replace[0]])
 
             self.showInputPanel(view)
+
+
+class UberSelectionReplace(sublimeplugin.TextCommand):
+    def run(self, view, args):
+        actions.replace(view, args[0], args[1])

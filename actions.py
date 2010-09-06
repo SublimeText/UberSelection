@@ -2,14 +2,39 @@ import re
 import sublime
 import selection
 
+def runFirst(*cmd):
+    """Takes any number of commands and runs them before calling the decorated
+    function.
+
+    Expects the first arg of decorated function to be a view instance.
+
+    Example:
+
+        @runFirst("splitSelectionIntoLines")
+        def my_func(view, blah):
+            ...
+    """
+    def catchDecoratedFunc(func):
+        def newFunc(*args, **kwargs):
+            try:
+                for c in cmd:
+                    args[0].runCommand(c)
+            except AttributeError:
+                print "runFirst decorator got bad arg."
+                return
+            func(*args, **kwargs)
+        return newFunc
+    return catchDecoratedFunc
+
 def dispatch(cmd, *args):
     if cmd in CMDS["simple_cmds"].keys():
         CMDS["simple_cmds"][cmd](*args)
     else:
         unknownCommand()
 
+@runFirst("splitSelectionIntoLines")
 def exclude(view, cmd):
-    view.runCommand("splitSelectionIntoLines")
+    # view.runCommand("splitSelectionIntoLines")
     what = cmd.argument[0]
     flags = 0
     flags |= re.IGNORECASE if "i" in list(cmd.flags) else 0
@@ -20,8 +45,9 @@ def exclude(view, cmd):
 
     view.show(view.sel())
 
+@runFirst("splitSelectionIntoLines")
 def include(view, cmd):
-    view.runCommand("splitSelectionIntoLines")
+    # view.runCommand("splitSelectionIntoLines")
     what = cmd.argument[0]
     flags = 0
     flags |= re.IGNORECASE if "i" in list(cmd.flags) else 0
@@ -32,8 +58,9 @@ def include(view, cmd):
 
     view.show(view.sel())
 
+@runFirst("splitSelectionIntoLines")
 def replace(view, what, with_this):
-    view.runCommand("splitSelectionIntoLines")
+    # view.runCommand("splitSelectionIntoLines")
     for r in view.sel():
         view.replace(r, re.sub(what, with_this, view.substr(r)))
 
