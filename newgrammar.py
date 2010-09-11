@@ -1,62 +1,76 @@
-# In dev.
-# Not in use.
-
 import pyparsing as p
 
-# Vim commands like: :e, :ls, etc.
-vim_cmd_name = p.Word(p.alphanums)
-vim_cmd_arg = p.Word(p.alphanums)
-vim_cmd = vim_cmd_name + p.Optional(vim_cmd_arg)
+def generate_range():
+    searchf = p.QuotedString(quoteChar="/", unquoteResults=False)
+    searchb = p.QuotedString(quoteChar="?", unquoteResults=False)
 
-# Range
-offset = p.Word("+-", max=1) + p.Word(p.nums)
-search_op = p.QuotedString(quoteChar="?", escChar="\\", unquoteResults=False) ^ p.QuotedString(quoteChar="/", escChar="\\", unquoteResults=False)
-position = p.Word(p.nums) ^ p.Word("$.", max=1) ^ search_op
-line_range = position.setResultsName("a") + p.Optional(offset).setResultsName("offset_a") + p.Optional("," + position.setResultsName("b") + p.Optional(offset).setResultsName("offset_b")) ^ "%"
+    term = p.Word(p.nums) ^ p.oneOf("$ .") ^ searchf ^ searchb
 
-# Cmd
-flags = p.Word("i")
-visual = p.Optional("-") + p.QuotedString(quoteChar="V/", escChar="\\", endQuoteChar="/", unquoteResults=False) + p.Optional(flags)
-separator = p.Word(":;,=/\\&$!", max=1)
-replacement = p.Literal("s") + separator + p.SkipTo(p.matchPreviousLiteral(separator), include=True).setResultsName("search") + p.SkipTo(p.matchPreviousLiteral(separator), include=True).setResultsName("replace") + p.Optional(flags).setResultsName("flags")
-cmd = p.Group(p.delimitedList(p.Group(visual | replacement), delim=";"))
-complex_cmd = line_range.setResultsName("range") + cmd.setResultsName("commands")
+    offset = p.oneOf("+ -") + p.Word(p.nums)
+    offset.setParseAction(lambda x: ''.join(x))
 
-uberselection_syntax = vim_cmd.setResultsName("vim_cmd") ^ line_range.setResultsName("line_range") ^ cmd.setResultsName("cmd") ^ complex_cmd.setResultsName("complex_cmd")
+    fullterm = term("value") + p.Optional(offset("offset"), default='0')
+    sep = p.Literal(",").suppress()
 
-# parse
-# if tokens.vim_cmd: do_vim_cmd
+    wholebuffer = p.Literal("%")
+
+    fullrange = fullterm("a") + p.Optional(sep + fullterm)("b")
+    return fullrange ^ wholebuffer("all")
+
+def generate_visual():
+    visual = p.QuotedString(quoteChar="V/", unquoteResults=True, endQuoteChar="/")
+    visual.setParseAction(lambda x: ["V", x[0]])
+
+    return visual
+
+def generate_visualmin():
+    visualmin = p.QuotedString(quoteChar="-V/", unquoteResults=True, endQuoteChar="/")
+    visualmin.setParseAction(lambda x: ["-V", x[0]])
+
+    return visualmin
+
+def generate_visual_flags():
+    flags = p.Optional(p.Word("ic"), default="i")
+
+    return flags
+
+def generate_fullvisual():
+    visual, visualmin, flags = generate_visual(), generate_visualmin(), generate_visual_flags()
+
+    visual = visual + flags
+    visualmin = visualmin + flags
+
+    return visual('visual') ^ visualmin('visual_min')
+
+def generate_vim_cmd():
+    # Vim commands like: :e, :ls, etc.
+    vim_cmd_name = p.Word(p.alphas)
+    vim_cmd_arg = p.Word(p.alphas)
+    arg = p.Optional(vim_cmd_arg, default='')
+    arg.setParseAction(lambda x: x[0])
+    vim_cmd = vim_cmd_name + arg
+    return vim_cmd
+
+def generate_sub_cmd():
+    separator = p.oneOf(": ; , = / \\ & $ !")
+    replacement = p.Literal("s").setResultsName("command") + separator + p.SkipTo(p.matchPreviousLiteral(separator), include=True).setResultsName("search") + p.SkipTo(p.matchPreviousLiteral(separator), include=True).setResultsName("replace")
+    return replacement
+
+def generate_grammar():
+    the_range = generate_range()
+    visual = generate_fullvisual()
+    visual = visual ^ generate_sub_cmd()
+    vim_cmd = generate_vim_cmd()
+
+    complex_cmd = p.Group(the_range)('range') + p.delimitedList(p.Group(visual), delim=";")('cmd')
+
+    return p.Group(vim_cmd)('vim_cmd') ^ p.Group(the_range)('range') ^ p.Group(p.delimitedList(p.Group(visual), delim=";"))('cmd') ^ p.Group(complex_cmd)('complex_cmd')
 
 if __name__ == "__main__":
-    print "="*50
-    print "Testing vim commands"
-    print "="*50
-    print vim_cmd.parseString("w"), ["w"]
-    print vim_cmd.parseString("ls"), ["ls"]
-    print vim_cmd.parseString("help"), ["help"]
-    print vim_cmd.parseString("h topic"), ["h", "topic"]
-    print "="*50
-    print line_range.parseString("?hey?+10")
-    print line_range.parseString("?hey?+10,$")
-    print line_range.parseString("?hey?+10,/$/-100")
-    x = line_range.parseString("/hey/+10")
-    print x.a, "//", x.offset_a, "::", x.b, "//", x.offset_b
-    print line_range.parseString("%")
-    print "="*50
-    print "Test complex cmd"
-    print complex_cmd.parseString("10,20s/a/b/")
-    print complex_cmd.parseString("10,20V/eco/;s/a/b/")
-    print "="*50
-    print "Test Uberselection syntax"
-    print uberselection_syntax.parseString("10")
-    print uberselection_syntax.parseString("10+20")
-    print uberselection_syntax.parseString("10+20,10")
-    print uberselection_syntax.parseString("10+20,10-5")
-    print uberselection_syntax.parseString(".+20,$-5")
-    print uberselection_syntax.parseString("/./+20,$-5")
-    print uberselection_syntax.parseString("-V//")
-    print uberselection_syntax.parseString("V//;-V/a/")
-    print uberselection_syntax.parseString("10,20V//;-V/a/")
-    print uberselection_syntax.parseString("w")
-    x = uberselection_syntax.parseString("10+5,20V//;-V/a/")
-    print "Range:", x.a, x.offset_a, x.b, x.offset_b, "Commands", x.complex_cmd.commands
+    x = generate_range()
+    c = x.parseString("%")
+    print c.all
+
+    x = generate_grammar()
+    c = x.parseString("%V/ECO/;-V/AVA/")
+    print c.complex_cmd.range, c.complex_cmd.cmd
