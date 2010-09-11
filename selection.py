@@ -14,7 +14,8 @@ def resetSels(view, default=(0, 0)):
 def selectSpanningLines(lines, view):
     """Selects from lines[0].begin() to lines[1].end()
     """
-    startPoint, endPoint = findLine(view, target=min(lines)), view.line(findLine(view, target=max(lines))).end()
-
+    firstLine, lastLine = findLine(view, target=min(lines)), findLine(view, target=max(lines))
+    # Default to last line if we request line greater than buffer line count.
+    if lastLine == -1: lastLine = view.fullLine(view.size())
     view.sel().clear()
-    view.sel().add(sublime.Region(startPoint, endPoint))
+    view.sel().add(sublime.Region(firstLine.begin(), lastLine.end()))

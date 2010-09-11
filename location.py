@@ -1,31 +1,34 @@
 import sublime
-# import grammar
 import re
 
-def findLine(view, start=0, end=-1, target=0):
-    """Performs a binary search to find line number `target`.
+def getLineNr(view, point):
+    return view.rowcol(point)[0] + 1
 
-    Normally you should only specify your `target` line number.
+def endOfLine(view, point):
+    return view.line(point).end()
+
+def beginningOfLine(view, point):
+    return view.line(point).begin()
+
+def findLine(view, start=0, end=-1, target=0):
+    """Performs binary search to locate `target` line number.
+    Returns `Region` comprising line no. `target` or -1 if can't find `target`.
     """
-    if target == 0: return 0
-    if target > view.rowcol(view.size())[0] + 1: return view.line(view.size()).begin()
+    if  target < 0 or target > view.size():
+        return -1
+
     if end == -1: end = view.size()
 
-    total_lines = (view.rowcol(end)[0] + 1)
-    relative_target = target
-    if start:
-        total_lines = total_lines +1 - (view.rowcol(start)[0] + 1)
-        relative_target = target + 1 - (view.rowcol(start)[0] + 1)
-
-    guessed_pos = int((end - (start -1 if start > 0 else start)) * (relative_target / float(total_lines)) + start)
-
-    if view.rowcol(guessed_pos)[0] + 1 == target:
-        return view.line(guessed_pos).begin()
-    else:
-        if view.rowcol(guessed_pos)[0] + 1 < target:
-            return findLine(view, guessed_pos, end, target)
+    lo, hi = start, end
+    while lo <= hi:
+        middle = lo + (hi - lo) / 2
+        if getLineNr(view, middle) < target:
+            lo = endOfLine(view, middle) + 1
+        elif getLineNr(view, middle) > target:
+            hi = beginningOfLine(view, middle) - 1
         else:
-            return findLine(view, start, guessed_pos, target)
+            return view.fullLine(middle)
+    return -1
 
 def search(what, backward=False):
     view = sublime.activeWindow().activeView()

@@ -3,26 +3,28 @@ import sublime
 import re
 import location
 
-offset = p.Optional(p.Group(p.Word("+-", max=1) + p.Word(p.nums)))
+def generate():
+    offset = p.Optional(p.Group(p.Word("+-", max=1) + p.Word(p.nums)))
 
-number = p.Word(p.nums) + offset
-anchor = p.Word(".$", max=1) + offset
-range_op = p.QuotedString(quoteChar="/", escChar="\\", unquoteResults=False) + offset
-range_op2 = p.QuotedString(quoteChar="?", escChar="\\", unquoteResults=False) + offset
-the_range = p.delimitedList(p.Group(number) | p.Group(anchor) | p.Group(range_op) | p.Group(range_op2)) | "%"
+    number = p.Word(p.nums) + offset
+    anchor = p.Word(".$", max=1) + offset
+    range_op = p.QuotedString(quoteChar="/", escChar="\\", unquoteResults=False) + offset
+    range_op2 = p.QuotedString(quoteChar="?", escChar="\\", unquoteResults=False) + offset
+    the_range = p.delimitedList(p.Group(number) | p.Group(anchor) | p.Group(range_op) | p.Group(range_op2)) | "%"
 
-# operators
-selection = p.Group(p.Optional("-") + "V").setResultsName("command") + p.Group(p.QuotedString(quoteChar="/", escChar="\\")).setResultsName("argument") + p.Group(p.Optional(p.Word("iS"))).setResultsName("flags")
+    # operators
+    selection = p.Group(p.Optional("-") + "V").setResultsName("command") + p.Group(p.QuotedString(quoteChar="/", escChar="\\")).setResultsName("argument") + p.Group(p.Optional(p.Word("iS"))).setResultsName("flags")
 
-separator = p.Word(":;,=/\\&$!", max=1)
-replacement = p.Literal("s").setResultsName("command") + separator + p.SkipTo(p.matchPreviousLiteral(separator), include=True).setResultsName("search") + p.SkipTo(p.matchPreviousLiteral(separator), include=True).setResultsName("replace")
-operator = p.delimitedList(p.Group(selection | replacement), delim=";")
+    separator = p.Word(":;,=/\\&$!", max=1)
+    replacement = p.Literal("s").setResultsName("command") + separator + p.SkipTo(p.matchPreviousLiteral(separator), include=True).setResultsName("search") + p.SkipTo(p.matchPreviousLiteral(separator), include=True).setResultsName("replace")
+    operator = p.delimitedList(p.Group(selection | replacement), delim=";")
 
-trans = p.Group(p.Optional(the_range)).setResultsName("range") + p.Group(operator).setResultsName("operator")
-cmd = p.Word("weqnN") | "ls"
-cmd = cmd + p.Optional(p.Word(p.alphas))
+    trans = p.Group(p.Optional(the_range)).setResultsName("range") + p.Group(operator).setResultsName("operator")
+    cmd = p.Word("weqnN") | "ls"
+    cmd = cmd + p.Optional(p.Word(p.alphas))
 
-grammar = cmd.setResultsName("vim_cmd") | trans.setResultsName("trans")
+    grammar = cmd.setResultsName("vim_cmd") | trans.setResultsName("trans")
+    return grammar
 
 def parseRange(the_range):
     """Returns a point (pos, pos) after parsing a range like these:
