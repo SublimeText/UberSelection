@@ -54,8 +54,8 @@ ls
 e
     Show list of files in current directory.
 
-Line reference
---------------
+Line references
+---------------
 
 Designates lines or ranges of lines in the active view.
 
