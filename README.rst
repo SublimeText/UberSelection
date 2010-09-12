@@ -1,10 +1,13 @@
 Uberselection
 =============
 
-Description_
-Examples_
-`Four ways to specify commands`_
-Tokens_
+- Description_
+- Examples_
+- `Four ways to specify commands`_
+- Tokens_
+    - `Sublime commands`_
+    - `Line references`_
+    - `Buffer commands`_
 
 Description
 ***********
@@ -56,12 +59,15 @@ Line reference
 
 Designates lines or ranges of lines in the active view.
 
-[0-9]*
+\[0-9\]\*
     Designates line by number.
+
 .
     Desigates the current line (first cursor in selection).
+
 $
     Designates the last line in the view.
+
 %
     Designates all lines in the view.
 
