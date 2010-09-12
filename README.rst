@@ -3,7 +3,7 @@ Uberselection
 
 - Description_
 - Examples_
-- `Four ways to specify commands`_
+- `Four ways to issue commands`_
 - Tokens_
     - `Sublime commands`_
     - `Line references`_
@@ -31,8 +31,8 @@ it.
 
 Replace "this" with "that" in the whole file.
 
-Four ways to specify commands
-*****************************
+Four ways to issue commands
+***************************
 
 1. <SUBLIME COMMAND>[ <ARG>]
 2. <LINE REF>[,<LINE REF>]
