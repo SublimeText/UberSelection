@@ -5,7 +5,6 @@ import re
 import selection
 import location
 import actions
-import grammar
 import newgrammar
 import pyparsing
 
