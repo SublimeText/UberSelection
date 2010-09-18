@@ -33,9 +33,8 @@ class UberSelectionCommand(sublimeplugin.TextCommand):
             return
 
         if tokens.vim_cmd:
-            # TODO: deal with arguments properly
-            vimactions.dispatch(view, tokens.vim_cmd[0])
-            # Don't show input panel again
+            vimactions.dispatch(view, tokens.vim_cmd[0], *tokens.vim_cmd[1])
+            # Return now because we don't want to show input panel again.
             return
 
         elif tokens.complex_cmd:

@@ -1,12 +1,12 @@
 import sublime
 import decorators
 
-
 def unknownCommand(cmd):
     sublime.statusMessage("UBERSELECTION (vim) -- Command unknown: %s" % cmd)
 
-def saveBuffer(view):
-    view.window().runCommand("save")
+def saveBuffer(view, *args):
+    cmd = "save" if not args else "saveAs"
+    view.window().runCommand(cmd)
 
 def saveBufferAll(view):
     view.window().runCommand("saveAll")
