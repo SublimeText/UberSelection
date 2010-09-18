@@ -12,24 +12,21 @@ Uberselection
 Description
 ***********
 
-Makes complex selections and replacements in a buffer via text commands.
+Make complex selections and replace text in a buffer via text commands.
 Inspired in Vim's ex mode.
 
 Examples
 ********
 
-10,20V/this/
+`10,20V/this/`
+    Select lines containing "this" between lines 10 and 20 (inclusive).
 
-Select lines containing "this" between lines 10 and 20 (inclusive).
+`.,.+20-V/this/`
+    Select lines NOT containing "this" from the current line to 20 lines down
+    from it.
 
-.,.+20-V/this/
-
-Select lines NOT containing "this" from the current line to 20 lines down from
-it.
-
-%s/this/that/
-
-Replace "this" with "that" in the whole file.
+`%s/this/that/`
+    Replace "this" with "that" in the whole file.
 
 Four ways to issue commands
 ***************************
@@ -47,12 +44,20 @@ Tokens
 Sublime commands
 ----------------
 
-w
-    Not implemented.
-ls
+`w`
+    Save the active buffer.
+`wall`
+    Save all opened buffers.
+`wq`
+    Save the active buffer and exit.
+`ZZ`
+    Save the active buffer and exit.
+`ls`
     Show list of opened views.
-e
+`e`
     Show list of files in current directory.
+`q`
+    Exit.
 
 Line references
 ---------------

@@ -1,10 +1,12 @@
 import sublimeplugin
 
 def runFirst(*cmd):
-    """Takes any number of commands and runs them before calling the decorated
-    function.
+    """I take any number of view commands and run them before calling the
+    decorated function.
 
-    Expects the first arg of decorated function to be a view instance.
+    Requirements:
+
+        The decorated func's first arg must be a view instance.
 
     Example:
 
@@ -24,11 +26,22 @@ def runFirst(*cmd):
     return catchDecoratedFunc
 
 def asTextCommand(f):
-    """Decorator to run `f` through a TextCommand.run method. Useful to group
-    buffer edits atomically so they can be undone in one go.
+    """I run `f` through a TextCommand.run method. Useful to group buffer edits
+    atomically.
+
+    Requirements:
+
+        A TextCommand called TextCommandRunnerCommand must exist and it must
+        have a .prime() method.
+
+        `f`'s first argument must be a view instance.
 
     Usage:
-        `f` is expected to be passed a `view` instance as its first argument.
+
+        @asTextCommand
+        def do_something(view, x, y):
+            view.replace(x, y)
+
     """
     def runThruTextCommand(*args, **kwargs):
         i = sublimeplugin.textCommands["textCommandRunner"]

@@ -1,17 +1,19 @@
 import sublime
 import decorators
 
-def dispatch(view, cmd, *args):
-    try:
-        CMDS["simple_cmds"][cmd](view, *args)
-    except KeyError:
-        unknownCommand(cmd)
 
 def unknownCommand(cmd):
     sublime.statusMessage("UBERSELECTION (vim) -- Command unknown: %s" % cmd)
 
 def saveBuffer(view):
     view.window().runCommand("save")
+
+def saveBufferAll(view):
+    view.window().runCommand("saveAll")
+
+def saveBufferAndExit(view):
+    saveBuffer(view)
+    sublime.statusMessage("Should exit now...")
 
 def editFile(view):
     view.window().runCommand("openFileInProject")
@@ -28,9 +30,19 @@ def previousViewInStack(view):
 def promptSelectFile(view):
     view.window().runCommand("promptSelectFile")
 
+def dispatch(view, cmd, *args):
+    try:
+        CMDS["simple"][cmd](view, *args)
+    except KeyError:
+        unknownCommand(cmd)
+
+
 CMDS = {
-     "simple_cmds": {
+     "simple": {
+        "wall": saveBufferAll,
         "w": saveBuffer,
+        "wq": saveBufferAndExit,
+        "ZZ": saveBufferAndExit,
         "e": editFile,
         "q": exitSublime,
         "n": nextViewInStack,
