@@ -4,10 +4,10 @@ import re
 def getLineNr(view, point):
     return view.rowcol(point)[0] + 1
 
-def endOfLine(view, point):
+def getEOL(view, point):
     return view.line(point).end()
 
-def beginningOfLine(view, point):
+def getBOL(view, point):
     return view.line(point).begin()
 
 def findLine(view, start=0, end=-1, target=0):
@@ -23,9 +23,9 @@ def findLine(view, start=0, end=-1, target=0):
     while lo <= hi:
         middle = lo + (hi - lo) / 2
         if getLineNr(view, middle) < target:
-            lo = endOfLine(view, middle) + 1
+            lo = getEOL(view, middle) + 1
         elif getLineNr(view, middle) > target:
-            hi = beginningOfLine(view, middle) - 1
+            hi = getBOL(view, middle) - 1
         else:
             return view.fullLine(middle)
     return -1
@@ -38,7 +38,7 @@ def search(what, backward=False):
         return (view.rowcol(reg.begin())[0] + 1) if reg else calculateRelativeRef('.')
 
     else:
-        sublime.statusMessage("Uberselection: performing reverse search...")
+        sublime.statusMessage("Performing reverse search (this could take a while)...")
         currLine = calculateRelativeRef('.') - 1
         bkup = view.sel()[0]
 

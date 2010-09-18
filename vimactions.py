@@ -2,13 +2,13 @@ import sublime
 import decorators
 
 def dispatch(view, cmd, *args):
-    if cmd in CMDS["simple_cmds"].keys():
+    try:
         CMDS["simple_cmds"][cmd](view, *args)
-    else:
-        unknownCommand()
+    except KeyError:
+        unknownCommand(cmd)
 
-def unknownCommand():
-    sublime.statusMessage("Command unknown.")
+def unknownCommand(cmd):
+    sublime.statusMessage("UBERSELECTION (vim) -- Command unknown: %s" % cmd)
 
 def saveBuffer(view):
     view.window().runCommand("save")
