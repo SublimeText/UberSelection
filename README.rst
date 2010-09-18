@@ -31,10 +31,10 @@ Examples
 Four ways to issue commands
 ***************************
 
-1. <SUBLIME COMMAND>[ <ARG>]
-2. <LINE REF>[,<LINE REF>]
-3. <BUFFER COMMAND>[;<BUFFER COMMAND>]*
-4. <LINE REF><BUFFER COMMAND>[;<BUFFER COMMAND>]*
+1. `<SUBLIME COMMAND>[ <ARG>]`
+2. `<LINE REF>[,<LINE REF>]`
+3. `<BUFFER COMMAND>[;<BUFFER COMMAND>]*`
+4. `<LINE REF><BUFFER COMMAND>[;<BUFFER COMMAND>]*`
 
 All tokens are explained in the following sections
 
@@ -45,7 +45,8 @@ Sublime commands
 ----------------
 
 `w`
-    Save the active buffer.
+    Save the active buffer. If you pass an arg to it, the Save As dialog will
+    show up. At the moment, the passed arg is ignored.
 `wall`
     Save all opened buffers.
 `wq`
@@ -58,22 +59,27 @@ Sublime commands
     Show list of files in current directory.
 `q`
     Exit.
+`n`
+    Next view.
+`N`
+    Previous view.
+
 
 Line references
 ---------------
 
 Designates lines or ranges of lines in the active view.
 
-\[0-9\]\*
+`\[0-9\]\*`
     Designates line by number.
 
-.
+`.`
     Desigates the current line (first cursor in selection).
 
-$
+`$`
     Designates the last line in the view.
 
-%
+`%`
     Designates all lines in the view.
 
 You can also specify offsets with `[+-][0-9]*`.
