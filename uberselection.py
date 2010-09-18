@@ -4,7 +4,7 @@ import re
 
 import selection
 import location
-import actions
+import actions, vimactions
 import newgrammar
 import pyparsing
 
@@ -15,8 +15,6 @@ class UberSelectionCommand(sublimeplugin.TextCommand):
     """
     def __init__(self):
         self.grammar = newgrammar.generate_grammar()
-        # self.grammar = grammar.generate()
-
 
     def run(self, view, args):
         self.showInputPanel(view)
@@ -36,14 +34,17 @@ class UberSelectionCommand(sublimeplugin.TextCommand):
 
         if tokens.vim_cmd:
             # TODO: deal with arguments properly
-            actions.dispatch(tokens.vim_cmd[0], view)
+            vimactions.dispatch(view, tokens.vim_cmd[0])
+            # Don't show input panel again
+            return
+
         elif tokens.complex_cmd:
             selection.selectSpanningLines(parseRange(tokens.complex_cmd.range), view)
             for cmd in tokens.complex_cmd:
                 if cmd[0] == "V":
-                    actions.include(view, cmd[1:])
+                    actions.include(view, cmd[1], cmd[2])
                 if cmd[0] == "-V":
-                    actions.exclude(view, cmd[1:])
+                    actions.exclude(view, cmd[1], cmd[2])
                 if cmd[0] == "s":
                     actions.replace(view, cmd[2][0], cmd[3][0])
         elif tokens.range:
@@ -58,13 +59,9 @@ class UberSelectionCommand(sublimeplugin.TextCommand):
 
 
         self.showInputPanel(view)
-def cmd(cmds):
-    for cmd in cmds:
-        print cmd
+
 
 def parseRange(r):
-    print "XXX", r
-
     if r.all == "%":
         x, offset_x = "1", "0"
         y, offset_y = "$", "0"
