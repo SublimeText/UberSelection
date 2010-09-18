@@ -85,14 +85,16 @@ Buffer commands
 
 Select lines and perform replacements in the view.
 
-V/<arg>/<flags>
-    Selects all lines containing `<arg>`. Case insensitive by default. Use the
-    flag `c` to make a case-sensitive search.
+`V/what/<flags>`
+    Selects all lines containing `what`. Case insensitive by default. Use the
+    flag `c` to make a case-sensitive search. By default, searches are case
+    insensitive.
 
--V/<arg>/<flags>
-    Same as above, but excludes the lines matching `<arg>`.
+`-V/what/<flags>`
+    Same as above, but excludes the lines matching `what`.
 
-s/<what>/<with>/
-    Replaces all instances of `<what>` with `<with>`.
+`s/what/with/`
+    Replaces all instances of `what` with `with`.
+    The separator "/" can be any of: !,$,%,&,=,/,:,;
 
 You can chain commands by separating them with a semicolon (`;`).
