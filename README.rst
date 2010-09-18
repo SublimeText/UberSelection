@@ -11,9 +11,17 @@ Uberselection
 
 Description
 ***********
-
 Make complex selections and replace text in a buffer via text commands.
 Inspired in Vim's ex mode.
+
+Getting started
+***************
+Clone repository under sublime.packagesPath() + "\\Uberselection".
+
+Usage
+*****
+#. Run from Sublime's console with `view.runCommand("uberSelection").
+#. Issue command as explained below.
 
 Examples
 ********
