@@ -79,7 +79,7 @@ Line references
 
 Designates lines or ranges of lines in the active view.
 
-``\[1-9]+\*``
+``[1-9]+``
     Designates line by number.
 
 ``.``
