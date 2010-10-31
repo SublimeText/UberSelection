@@ -13,7 +13,7 @@ def saveBufferAll(view):
 
 def saveBufferAndExit(view):
     saveBuffer(view)
-    sublime.statusMessage("Should exit now...")
+    exitSublime(view)
 
 def editFile(view):
     view.window().runCommand("openFileInProject")

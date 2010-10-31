@@ -53,7 +53,7 @@ def generate_vim_cmd():
 
 def generate_sub_cmd():
     separator = p.oneOf(": ; , = / \\ & $ !")
-    replacement = p.Literal("s").setResultsName("command") + separator + p.SkipTo(p.matchPreviousLiteral(separator), include=True).setResultsName("search") + p.SkipTo(p.matchPreviousLiteral(separator), include=True).setResultsName("replace")
+    replacement = p.Literal("s").setResultsName("command") + separator + p.SkipTo(p.matchPreviousLiteral(separator), include=True).setWhitespaceChars("\r\n").setResultsName("search") + p.SkipTo(p.matchPreviousLiteral(separator), include=True).setWhitespaceChars("\r\n").setResultsName("replace")
     return replacement
 
 def generate_grammar():

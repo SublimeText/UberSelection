@@ -2,19 +2,20 @@ Uberselection
 =============
 
 - Description_
+- `Getting Started`_
 - Examples_
 - `Four ways to issue commands`_
 - Tokens_
     - `Sublime commands`_
     - `Line references`_
-    - `Buffer commands`_
+    - `Text commands`_
 
 Description
 ***********
 Make complex selections and replace text in a buffer via text commands.
 Inspired in Vim's ex mode.
 
-Getting started
+Getting Started
 ***************
 Clone repository under ``sublime.packagesPath() + "\\Uberselection"``.
 
@@ -27,14 +28,14 @@ Examples
 ********
 
 ``10,20V/this/``
-    Select lines containing "this" between lines 10 and 20 (inclusive).
+    Select lines containing ``this`` between lines 10 and 20 (inclusive).
 
 ``.,.+20-V/this/``
-    Select lines NOT containing "this" from the current line to 20 lines down
+    Select lines **not** containing ``this`` from the current line to 20 lines down
     from it.
 
 ``%s/this/that/``
-    Replace "this" with "that" in the whole file.
+    Replace ``this`` with ``that`` in the whole file.
 
 Four ways to issue commands
 ***************************
@@ -52,7 +53,7 @@ Tokens
 Sublime commands
 ----------------
 
-``w``
+``w [arg]``
     Save the active buffer. If you pass an arg to it, the Save As dialog will
     show up. At the moment, the passed arg is ignored.
 ``wall``
@@ -78,7 +79,7 @@ Line references
 
 Designates lines or ranges of lines in the active view.
 
-``\[0-9\]\*``
+``\[1-9]+\*``
     Designates line by number.
 
 ``.``
@@ -90,12 +91,12 @@ Designates lines or ranges of lines in the active view.
 ``%``
     Designates all lines in the view.
 
-You can also specify offsets with ``[+-][0-9]*``.
+You can also specify offsets with ``[+-][1-9]+``.
 
 In order to designate a range, use two comma separated line references.
 
-Buffer commands
----------------
+Text commands
+-------------
 
 Select lines and perform replacements in the view.
 
@@ -109,6 +110,6 @@ Select lines and perform replacements in the view.
 
 ``s/what/with/``
     Replaces all instances of ``what`` with ``with``.
-    The separator "/" can be any of: ``! $ % & = / : ;``
+    The separator ``/`` can be any of: ``! $ % & = / : ;``
 
 You can chain commands by separating them with a semicolon (``;``).
