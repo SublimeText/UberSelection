@@ -76,10 +76,11 @@ def parseRange(r):
 def parseRangePart(p):
     if p.isdigit():
         return int(p)
-    if p in ('$', '.'):
-        return location.calculateRelativeRef(p)
+    # Order matters! This case can contain the next one with other semantics.
     if p.startswith('/') or p.startswith('?'):
         return location.search(p[1:-1], p.startswith('?'))
+    if p in ('$', '.'):
+        return location.calculateRelativeRef(p)
 
 
 class TextCommandRunner(sublimeplugin.TextCommand):

@@ -35,7 +35,12 @@ def search(what, backward=False):
 
     if not backward:
         reg = view.find(what, view.sel()[0].begin())
-        return (view.rowcol(reg.begin())[0] + 1) if reg else calculateRelativeRef('.')
+        if not reg is None:
+            row = (view.rowcol(reg.begin())[0] + 1)
+        else:
+            row = calculateRelativeRef('.')
+
+        return row
 
     else:
         sublime.statusMessage("Performing reverse search (this could take a while)...")
