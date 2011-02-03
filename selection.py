@@ -19,3 +19,4 @@ def selectSpanningLines(lines, view):
     if lastLine == -1: lastLine = view.fullLine(view.size())
     view.sel().clear()
     view.sel().add(sublime.Region(firstLine.begin(), lastLine.end()))
+    view.show(view.sel()[0].begin())

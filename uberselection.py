@@ -1,4 +1,4 @@
-import sublime, sublimeplugin
+import sublime, sublime_plugin
 import functools
 import re
 
@@ -10,57 +10,57 @@ import pyparsing
 
 _PACKAGE_NAME = "Uberselection"
 
-class UberSelectionCommand(sublimeplugin.TextCommand):
+class UberSelectionCommand(sublime_plugin.TextCommand):
     """Executes vim ex-mode like commands.
     """
-    def __init__(self):
-        self.grammar = newgrammar.generate_grammar()
+    grammar = newgrammar.generate_grammar()
 
-    def run(self, view, args):
-        if not args:
-            self.showInputPanel(view)
+    def run(self, edit, arg=None):
+        if not arg:
+            self.showInputPanel(edit)
         else:
-            self.onDone(view, args[0])
+            # XXX What's arg?
+            self.onDone(self.view, arg)
 
-    def showInputPanel(self, view):
-        view.window().showInputPanel("Uberselection CMD", getattr(self, 'lastCmdLine', ''),
-                                        functools.partial(self.onDone, view), None, None)
+    def showInputPanel(self, edit):
+        self.view.window().show_input_panel("Uberselection CMD", getattr(self.view, 'lastCmdLine', ''),
+                                        functools.partial(self.onDone, edit), None, None)
 
-    def onDone(self, view, s):
+    def onDone(self, edit, s):
 
         self.lastCmdLine = s
         try:
             tokens = self.grammar.parseString(s)
         except pyparsing.ParseException:
-            sublime.statusMessage("Uberselection: Invalid command string.")
+            sublime.status_message("Uberselection: Invalid command string.")
             return
 
         if tokens.vim_cmd:
-            vimactions.dispatch(view, tokens.vim_cmd[0], *tokens.vim_cmd[1])
+            vimactions.dispatch(self.view, tokens.vim_cmd[0], *tokens.vim_cmd[1])
             # Return now because we don't want to show input panel again.
             return
 
         elif tokens.complex_cmd:
-            selection.selectSpanningLines(parseRange(tokens.complex_cmd.range), view)
+            selection.selectSpanningLines(parseRange(tokens.complex_cmd.range), self.view)
             for cmd in tokens.complex_cmd:
                 if cmd[0] == "V":
-                    actions.include(view, cmd[1], cmd[2])
+                    actions.include(self.view, cmd[1], cmd[2])
                 if cmd[0] == "-V":
-                    actions.exclude(view, cmd[1], cmd[2])
+                    actions.exclude(self.view, cmd[1], cmd[2])
                 if cmd[0] == "s":
-                    actions.replace(view, cmd[2][0], cmd[3][0])
+                    actions.replace(self.view, edit, cmd[2][0], cmd[3][0])
         elif tokens.range:
-            selection.selectSpanningLines(parseRange(tokens.range), view)
+            selection.selectSpanningLines(parseRange(tokens.range), self.view)
         elif tokens.cmd:
-            selection.selectSpanningLines(parseRange(self.grammar.parseString(".").range), view)
+            selection.selectSpanningLines(parseRange(self.grammar.parseString(".").range), self.view)
             for cmd in tokens.cmd:
                 if cmd[0] == "s":
-                    actions.replace(view, cmd[2][0], cmd[3][0])
+                    actions.replace(self.view, cmd[2][0], cmd[3][0])
         else:
-            sublime.statusMessage("Uberselection: Unknown command.")
+            sublime.status_message("Uberselection: Unknown command.")
 
 
-        self.showInputPanel(view)
+        self.showInputPanel(self.view)
 
 
 def parseRange(r):
@@ -83,21 +83,21 @@ def parseRangePart(p):
         return location.calculateRelativeRef(p)
 
 
-class TextCommandRunner(sublimeplugin.TextCommand):
+class TextCommandRunner(sublime_plugin.TextCommand):
     """Generic TextCommand to run delegates so that the modifications they
     perform to the buffer are grouped atomically.
 
     Example:
-        i = sublimeplugin.textCommands['textCommandRunner']
+        i = sublime_plugin.textCommands['textCommandRunner']
         i.prime(delegate, args, kwargs)
         view.runCommand('textCommandRunner')
 
     This class is intended to be used from a decorator wrapping a function
     with a `view` instance as first argument.
     """
-    def run(self, view, args):
+    def run(self, edit, args):
         if not hasattr(self, 'f'): return
-        self.f(*self.args, **self.kwargs)
+        self.f(self.view, edit, *self.args[2:], **self.kwargs)
         del self.f
 
     def prime(self, f, args, kwargs):

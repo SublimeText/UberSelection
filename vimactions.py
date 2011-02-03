@@ -2,33 +2,33 @@ import sublime
 import decorators
 
 def unknownCommand(cmd):
-    sublime.statusMessage("UBERSELECTION (vim) -- Command unknown: %s" % cmd)
+    sublime.status_message("UBERSELECTION (vim) -- Command unknown: %s" % cmd)
 
 def saveBuffer(view, *args):
-    cmd = "save" if not args else "saveAs"
-    view.window().runCommand(cmd)
+    cmd = "save" if not args else "save_as"
+    view.window().run_command(cmd)
 
 def saveBufferAll(view):
-    view.window().runCommand("saveAll")
+    view.window().run_command("save_all")
 
 def saveBufferAndExit(view):
     saveBuffer(view)
     exitSublime(view)
 
 def editFile(view):
-    view.window().runCommand("openFileInProject")
+    view.window().run_command("open_file_in_project")
 
 def exitSublime(view):
-    view.window().runCommand("exit")
+    view.window().run_command("exit")
 
 def nextViewInStack(view):
-    view.window().runCommand("nextViewInStack")
+    view.window().run_command("next_view_in_stack")
 
 def previousViewInStack(view):
-    view.window().runCommand("prevViewInStack")
+    view.window().run_command("prev_view_in_stack")
 
 def promptSelectFile(view):
-    view.window().runCommand("promptSelectFile")
+    view.window().run_command("prompt_select_file")
 
 def dispatch(view, cmd, *args):
     try:

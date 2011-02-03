@@ -27,11 +27,11 @@ def findLine(view, start=0, end=-1, target=0):
         elif getLineNr(view, middle) > target:
             hi = getBOL(view, middle) - 1
         else:
-            return view.fullLine(middle)
+            return view.full_line(middle)
     return -1
 
 def search(what, backward=False):
-    view = sublime.activeWindow().activeView()
+    view = sublime.active_window().active_view()
 
     if not backward:
         reg = view.find(what, view.sel()[0].begin())
@@ -43,7 +43,7 @@ def search(what, backward=False):
         return row
 
     else:
-        sublime.statusMessage("Performing reverse search (this could take a while)...")
+        sublime.status_message("Performing reverse search (this could take a while)...")
         currLine = calculateRelativeRef('.') - 1
         bkup = view.sel()[0]
 
@@ -59,7 +59,7 @@ def search(what, backward=False):
         return view.rowcol(bkup.begin())[0] + 1
 
 def calculateRelativeRef(where):
-    view = sublime.activeWindow().activeView()
+    view = sublime.active_window().active_view()
     if where == '$':
         return view.rowcol(view.size())[0] + 1
     if where == '.':
