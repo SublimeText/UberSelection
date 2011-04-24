@@ -90,4 +90,4 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
                                                 end=self.view.sel()[0].begin())
             return location.search(self.view, p[1:-1])
         if p in ('$', '.'):
-            return location.calculate_relative_ref(p)
+            return location.calculate_relative_ref(self.view, p)

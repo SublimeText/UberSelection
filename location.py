@@ -81,7 +81,7 @@ def reverse_search(view, what, start=0, end=-1):
         elif search_in_range(view, what, lo, middle - 1):
             hi = middle -1
         else:
-            return calculate_relative_ref('.')
+            return calculate_relative_ref(view, '.')
 
         # Don't search forever the same line.
         if last_match and line.contains(last_match):
@@ -96,12 +96,11 @@ def search(view, what):
     if not reg is None:
         row = (view.rowcol(reg.begin())[0] + 1)
     else:
-        row = calculate_relative_ref('.')
+        row = calculate_relative_ref(view, '.')
     return row
 
 
-def calculate_relative_ref(where):
-    view = sublime.active_window().active_view()
+def calculate_relative_ref(view, where):
     if where == '$':
         return view.rowcol(view.size())[0] + 1
     if where == '.':
