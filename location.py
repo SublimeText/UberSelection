@@ -6,15 +6,17 @@ def get_line_nr(view, point):
     return view.rowcol(point)[0] + 1
 
 
+# TODO: Move this to sublime_lib; make it accept a point or a region.
 def getEOL(view, point):
     return view.line(point).end()
 
 
+# TODO: Move this to sublime_lib; make it accept a point or a region.
 def getBOL(view, point):
     return view.line(point).begin()
 
 
-def findLine(view, start=0, end=-1, target=0):
+def find_line(view, start=0, end=-1, target=0):
     """Performs binary search to locate `target` line number.
     Returns `Region` comprising line no. `target` or -1 if can't find `target`.
     """
@@ -35,10 +37,12 @@ def findLine(view, start=0, end=-1, target=0):
     return -1
 
 
+# TODO: Move this to sublime_lib; make it accept a point or a region.
 def BOL(line):
     return line.begin()
 
 
+# TODO: Move this to sublime_lib; make it accept a point or a region.
 def EOL(line):
     return line.end()
 
