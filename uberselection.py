@@ -15,12 +15,12 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
     """
     grammar = newgrammar.generate_grammar()
 
-    def run(self, edit, arg=None):
-        if not arg:
+    def run(self, edit, command=None):
+        if not command:
             self.showInputPanel(edit)
         else:
-            # XXX What's arg?
-            self.onDone(self.view, arg)
+            # XXX What's command?
+            self.onDone(self.view, command)
 
     def showInputPanel(self, edit):
         self.view.window().show_input_panel("Uberselection CMD", getattr(self.view, 'lastCmdLine', ''),
