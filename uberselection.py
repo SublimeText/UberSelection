@@ -45,7 +45,7 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
             return
 
         elif tokens.complex_cmd:
-            selection.select_spanning_lines(parseRange(tokens.complex_cmd.range),
+            selection.select_spanning_lines(self.parseRange(tokens.complex_cmd.range),
                                             self.view)
             for cmd in tokens.complex_cmd:
                 if cmd[0] == "V":
@@ -55,10 +55,10 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
                 if cmd[0] == "s":
                     actions.replace(self.view, cmd[2][0], cmd[3][0])
         elif tokens.range:
-            selection.select_spanning_lines(parseRange(tokens.range), self.view)
+            selection.select_spanning_lines(self.parseRange(tokens.range), self.view)
         elif tokens.cmd:
             selection.select_spanning_lines(
-                                parseRange(self.grammar.parseString(".").range),
+                                self.parseRange(self.grammar.parseString(".").range),
                                 self.view)
             for cmd in tokens.cmd:
                 if cmd[0] == "s":
@@ -68,25 +68,25 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
 
         self.show_input_panel(self.view)
 
+    def parseRange(self, r):
+        if r.all == "%":
+            x, offset_x = "1", "0"
+            y, offset_y = "$", "0"
+        else:
+            x, offset_x = r.a.value, r.a.offset
+            y, offset_y = (x, offset_x) if not hasattr(r.b, "value") else (
+                                                                        r.b.value,
+                                                                        r.b.offset
+                                                                        )
+        return self.parseRangePart(x) + int(offset_x), self.parseRangePart(y) + int(offset_y)
 
-def parseRange(r):
-    if r.all == "%":
-        x, offset_x = "1", "0"
-        y, offset_y = "$", "0"
-    else:
-        x, offset_x = r.a.value, r.a.offset
-        y, offset_y = (x, offset_x) if not hasattr(r.b, "value") else (
-                                                                    r.b.value,
-                                                                    r.b.offset
-                                                                    )
-    return parseRangePart(x) + int(offset_x), parseRangePart(y) + int(offset_y)
-
-
-def parseRangePart(p):
-    if p.isdigit():
-        return int(p)
-    # Order matters! This case can contain the next one with other semantics.
-    if p.startswith('/') or p.startswith('?'):
-        return location.search(p[1:-1], p.startswith('?'))
-    if p in ('$', '.'):
-        return location.calculateRelativeRef(p)
+    def parseRangePart(self, p):
+        if p.isdigit():
+            return int(p)
+        # Order matters! This case can contain the next one with other semantics.
+        if p.startswith('/') or p.startswith('?'):
+            if p.startswith('?'):
+                return location.reverse_search(self.view, p[1:-1], end=self.view.sel()[0].begin())
+            return location.search(self.view, p[1:-1])
+        if p in ('$', '.'):
+            return location.calculateRelativeRef(p)

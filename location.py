@@ -64,7 +64,7 @@ def find_last_match(view, what, start, end):
             return match
 
 
-def search_backwards(view, what, start=0, end=-1):
+def reverse_search(view, what, start=0, end=-1):
     if end == -1: end = view.size()
     end = EOL(view.line(end))
     
@@ -91,20 +91,13 @@ def search_backwards(view, what, start=0, end=-1):
         last_match = sublime.Region(line.begin(), line.end())    
 
 
-def search(what, backward=False):
-    view = sublime.active_window().active_view()
-
-    if not backward:
-        reg = view.find(what, view.sel()[0].begin())
-        if not reg is None:
-            row = (view.rowcol(reg.begin())[0] + 1)
-        else:
-            row = calculateRelativeRef('.')
-
-        return row
-
+def search(view, what):
+    reg = view.find(what, view.sel()[0].begin())
+    if not reg is None:
+        row = (view.rowcol(reg.begin())[0] + 1)
     else:
-        return search_backwards(view, what, end=view.sel()[0].begin())
+        row = calculateRelativeRef('.')
+    return row
 
 
 def calculateRelativeRef(where):
