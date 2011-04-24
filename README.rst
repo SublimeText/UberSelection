@@ -17,6 +17,9 @@ Inspired in Vim's ex mode.
 
 Getting Started
 ***************
+
+Download and install the `latest release`_ of UberSelection.
+
 Clone repository under ``sublime.packagesPath() + "\\Uberselection"``.
 
 .. _latest release: https://bitbucket.org/guillermooo/uberselection/downloads/UberSelection.sublime-package
