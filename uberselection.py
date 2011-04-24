@@ -53,7 +53,7 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
                 if cmd[0] == "-V":
                     actions.exclude(self.view, cmd[1], cmd[2])
                 if cmd[0] == "s":
-                    actions.replace(self.view, edit, cmd[2][0], cmd[3][0])
+                    actions.replace(self.view, cmd[2][0], cmd[3][0])
         elif tokens.range:
             selection.selectSpanningLines(parseRange(tokens.range), self.view)
         elif tokens.cmd:
