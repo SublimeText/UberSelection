@@ -19,6 +19,8 @@ Getting Started
 ***************
 Clone repository under ``sublime.packagesPath() + "\\Uberselection"``.
 
+Install AAAPackageDev (dependency).
+
 Usage
 *****
 #. Run from Sublime's console with ``view.runCommand("uberSelection")``.
