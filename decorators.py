@@ -15,13 +15,13 @@ def runFirst(*cmd):
         def my_func(view, blah):
             ...
     """
-    def catchDecoratedFunc(func):
-        def newFunc(*args, **kwargs):
+    def catch_decorated_func(func):
+        def new_func(*args, **kwargs):
             try:
                 for c in cmd:
                     args[0].run_command(c)
             except AttributeError:
                 print "runFirst decorator got bad arg."
             return func(*args, **kwargs)
-        return newFunc
-    return catchDecoratedFunc
+        return new_func
+    return catch_decorated_func
