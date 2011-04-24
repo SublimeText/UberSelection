@@ -3,7 +3,7 @@ import sublime
 import selection
 import decorators
 
-def computeFlags(textFlags):
+def compute_flags(textFlags):
     flags = 0
     flags |= re.IGNORECASE
     flags ^= re.IGNORECASE if "c" in textFlags else 0
@@ -13,7 +13,7 @@ def computeFlags(textFlags):
 @decorators.runFirst("split_selection_into_lines")
 def exclude(view, what, flags):
     for r in reversed(view.sel()):
-        if re.search("%s" % what, view.substr(r), computeFlags(flags)):
+        if re.search("%s" % what, view.substr(r), compute_flags(flags)):
             view.sel().subtract(r)
 
     view.show(view.sel())
@@ -22,7 +22,7 @@ def exclude(view, what, flags):
 @decorators.runFirst("split_selection_into_lines")
 def include(view, what, flags):
     for r in reversed(view.sel()):
-        if not re.search("%s" % what, view.substr(r), computeFlags(flags)):
+        if not re.search("%s" % what, view.substr(r), compute_flags(flags)):
             view.sel().subtract(r)
 
     view.show(view.sel())

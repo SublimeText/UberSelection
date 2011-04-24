@@ -30,7 +30,6 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
                                 None, None)
 
     def on_done(self, edit, s):
-
         self.last_cmd_line = s
         try:
             tokens = self.grammar.parseString(s)
