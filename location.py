@@ -1,14 +1,18 @@
 import sublime
 import re
 
+
 def getLineNr(view, point):
     return view.rowcol(point)[0] + 1
+
 
 def getEOL(view, point):
     return view.line(point).end()
 
+
 def getBOL(view, point):
     return view.line(point).begin()
+
 
 def findLine(view, start=0, end=-1, target=0):
     """Performs binary search to locate `target` line number.
@@ -30,6 +34,59 @@ def findLine(view, start=0, end=-1, target=0):
             return view.full_line(middle)
     return -1
 
+
+def BOL(line):
+    return line.begin()
+
+
+def EOL(line):
+    return line.end()
+
+
+def search_in_range(view, what, start, end):
+    match = view.find(what, start)
+    if match and ((match.begin() >= start) and (match.end() <= end)):
+        return True
+
+
+def find_last_match(view, what, start, end):
+    match = view.find(what, start)
+    new_match = None
+    while match:
+        new_match = view.find(what, match.end())
+        if new_match and new_match.end() <= end:
+            match = new_match
+        else:
+            return match
+
+
+def search_backwards(view, what, start=0, end=-1):
+    if end == -1: end = view.size()
+    end = EOL(view.line(end))
+    
+    last_match = None
+
+    lo, hi = start, end
+    while True:
+        middle = (lo + hi) / 2    
+        line = view.line(middle)
+        middle, eol = BOL(line), EOL(line)
+
+        if search_in_range(view, what, middle, hi):
+            lo = middle
+        elif search_in_range(view, what, lo, middle - 1):
+            hi = middle -1
+        else:
+            return calculateRelativeRef('.')
+
+        # Don't search forever the same line.
+        if last_match and line.contains(last_match):
+            match = find_last_match(view, what, lo, hi)
+            return view.rowcol(match.begin())[0] + 1
+        
+        last_match = sublime.Region(line.begin(), line.end())    
+
+
 def search(what, backward=False):
     view = sublime.active_window().active_view()
 
@@ -44,19 +101,8 @@ def search(what, backward=False):
 
     else:
         sublime.status_message("Performing reverse search (this could take a while)...")
-        currLine = calculateRelativeRef('.') - 1
-        bkup = view.sel()[0]
+        return search_backwards(view, what, end=view.sel()[0].begin())
 
-        while currLine > 0:
-            if re.search(what, view.substr(view.line(view.sel()[0].begin()))):
-                view.sel().clear()
-                view.sel().add(bkup)
-                return currLine + 1
-
-            view.runCommand('move', ['lines', '-1'])
-            currLine -= 1
-
-        return view.rowcol(bkup.begin())[0] + 1
 
 def calculateRelativeRef(where):
     view = sublime.active_window().active_view()
