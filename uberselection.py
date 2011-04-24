@@ -86,7 +86,8 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
         # Order matters! This case can contain the next one with other semantics.
         if p.startswith('/') or p.startswith('?'):
             if p.startswith('?'):
-                return location.reverse_search(self.view, p[1:-1], end=self.view.sel()[0].begin())
+                return location.reverse_search(self.view, p[1:-1],
+                                                end=self.view.sel()[0].begin())
             return location.search(self.view, p[1:-1])
         if p in ('$', '.'):
-            return location.calculateRelativeRef(p)
+            return location.calculate_relative_ref(p)
