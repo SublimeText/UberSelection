@@ -1,52 +1,52 @@
 import sublime
 import decorators
 
-def unknownCommand(cmd):
+def unknown_command(cmd):
     sublime.status_message("UBERSELECTION (vim) -- Command unknown: %s" % cmd)
 
 def saveBuffer(view, *args):
     cmd = "save" if not args else "save_as"
     view.window().run_command(cmd)
 
-def saveBufferAll(view):
+def save_buffer_all(view):
     view.window().run_command("save_all")
 
-def saveBufferAndExit(view):
+def save_buffer_and_exit(view):
     saveBuffer(view)
     exitSublime(view)
 
-def editFile(view):
+def edit_file(view):
     view.window().run_command("open_file_in_project")
 
-def exitSublime(view):
+def exit_sublime(view):
     view.window().run_command("exit")
 
-def nextViewInStack(view):
+def next_view_in_stack(view):
     view.window().run_command("next_view_in_stack")
 
-def previousViewInStack(view):
+def previous_view_in_stack(view):
     view.window().run_command("prev_view_in_stack")
 
-def promptSelectFile(view):
+def prompt_select_file(view):
     view.window().run_command("prompt_select_file")
 
 def dispatch(view, cmd, *args):
     try:
         CMDS["simple"][cmd](view, *args)
     except KeyError:
-        unknownCommand(cmd)
+        unknown_command(cmd)
 
 
 CMDS = {
      "simple": {
-        "wall": saveBufferAll,
+        "wall": save_buffer_all,
         "w": saveBuffer,
-        "wq": saveBufferAndExit,
-        "ZZ": saveBufferAndExit,
-        "e": editFile,
-        "q": exitSublime,
-        "n": nextViewInStack,
-        "N": previousViewInStack,
-        "ls": promptSelectFile,
+        "wq": save_buffer_and_exit,
+        "ZZ": save_buffer_and_exit,
+        "e": edit_file,
+        "q": exit_sublime,
+        "n": next_view_in_stack,
+        "N": previous_view_in_stack,
+        "ls": prompt_select_file,
     },
 }
