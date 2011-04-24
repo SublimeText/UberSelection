@@ -19,6 +19,8 @@ Getting Started
 ***************
 Clone repository under ``sublime.packagesPath() + "\\Uberselection"``.
 
+.. _latest release: https://bitbucket.org/guillermooo/uberselection/downloads/UberSelection.sublime-package
+
 Install AAAPackageDev (dependency).
 
 Usage
