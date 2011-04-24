@@ -1,4 +1,5 @@
 import sublime, sublime_plugin
+
 import functools
 import re
 
@@ -6,9 +7,9 @@ import selection
 import location
 import actions, vimactions
 import newgrammar
+
 import pyparsing
 
-_PACKAGE_NAME = "Uberselection"
 
 class UberSelectionCommand(sublime_plugin.TextCommand):
     """Executes vim ex-mode like commands.
@@ -17,18 +18,17 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
 
     def run(self, edit, command=None):
         if not command:
-            self.showInputPanel(edit)
+            self.show_input_panel(edit)
         else:
-            # XXX What's command?
-            self.onDone(self.view, command)
+            self.on_done(self.view, command)
 
-    def showInputPanel(self, edit):
-        self.view.window().show_input_panel("Uberselection CMD", getattr(self.view, 'lastCmdLine', ''),
-                                        functools.partial(self.onDone, edit), None, None)
+    def show_input_panel(self, edit):
+        self.view.window().show_input_panel("Uberselection CMD", getattr(self.view, 'last_cmd_line', ''),
+                                        functools.partial(self.on_done, edit), None, None)
 
-    def onDone(self, edit, s):
+    def on_done(self, edit, s):
 
-        self.lastCmdLine = s
+        self.last_cmd_line = s
         try:
             tokens = self.grammar.parseString(s)
         except pyparsing.ParseException:
@@ -60,7 +60,7 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
             sublime.status_message("Uberselection: Unknown command.")
 
 
-        self.showInputPanel(self.view)
+        self.show_input_panel(self.view)
 
 
 def parseRange(r):
