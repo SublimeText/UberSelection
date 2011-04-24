@@ -5,9 +5,9 @@ from location import findLine
 def select_spanning_lines(lines, view):
     """Selects from lines[0].begin() to lines[1].end()
     """
-    firstLine, lastLine = findLine(view, target=min(lines)), findLine(view, target=max(lines))
+    first_line, last_line = findLine(view, target=min(lines)), findLine(view, target=max(lines))
     # Default to last line if we request line greater than buffer line count.
-    if lastLine == -1: lastLine = view.fullLine(view.size())
+    if last_line == -1: last_line = view.fullLine(view.size())
     view.sel().clear()
-    view.sel().add(sublime.Region(firstLine.begin(), lastLine.end()))
+    view.sel().add(sublime.Region(first_line.begin(), last_line.end()))
     view.show(view.sel()[0].begin())
