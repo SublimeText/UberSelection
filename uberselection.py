@@ -81,26 +81,3 @@ def parseRangePart(p):
         return location.search(p[1:-1], p.startswith('?'))
     if p in ('$', '.'):
         return location.calculateRelativeRef(p)
-
-
-class TextCommandRunner(sublime_plugin.TextCommand):
-    """Generic TextCommand to run delegates so that the modifications they
-    perform to the buffer are grouped atomically.
-
-    Example:
-        i = sublime_plugin.textCommands['textCommandRunner']
-        i.prime(delegate, args, kwargs)
-        view.runCommand('textCommandRunner')
-
-    This class is intended to be used from a decorator wrapping a function
-    with a `view` instance as first argument.
-    """
-    def run(self, edit, args):
-        if not hasattr(self, 'f'): return
-        self.f(self.view, edit, *self.args[2:], **self.kwargs)
-        del self.f
-
-    def prime(self, f, args, kwargs):
-        self.f = f
-        self.args = args
-        self.kwargs = kwargs
