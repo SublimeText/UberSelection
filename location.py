@@ -104,7 +104,6 @@ def search(what, backward=False):
         return row
 
     else:
-        sublime.status_message("Performing reverse search (this could take a while)...")
         return search_backwards(view, what, end=view.sel()[0].begin())
 
 
