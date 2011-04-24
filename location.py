@@ -2,7 +2,7 @@ import sublime
 import re
 
 
-def getLineNr(view, point):
+def get_line_nr(view, point):
     return view.rowcol(point)[0] + 1
 
 
@@ -26,9 +26,9 @@ def findLine(view, start=0, end=-1, target=0):
     lo, hi = start, end
     while lo <= hi:
         middle = lo + (hi - lo) / 2
-        if getLineNr(view, middle) < target:
+        if get_line_nr(view, middle) < target:
             lo = getEOL(view, middle) + 1
-        elif getLineNr(view, middle) > target:
+        elif get_line_nr(view, middle) > target:
             hi = getBOL(view, middle) - 1
         else:
             return view.full_line(middle)
