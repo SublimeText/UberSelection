@@ -12,7 +12,7 @@ def compute_flags(text_flags):
     return flags
 
 
-@decorators.runFirst("split_selection_into_lines")
+@decorators.run_first("split_selection_into_lines")
 def exclude(view, what, flags):
     for r in reversed(view.sel()):
         if re.search("%s" % what, view.substr(r), compute_flags(flags)):
@@ -20,7 +20,7 @@ def exclude(view, what, flags):
     view.show(view.sel())
 
 
-@decorators.runFirst("split_selection_into_lines")
+@decorators.run_first("split_selection_into_lines")
 def include(view, what, flags):
     for r in reversed(view.sel()):
         if not re.search("%s" % what, view.substr(r), compute_flags(flags)):
@@ -28,7 +28,7 @@ def include(view, what, flags):
     view.show(view.sel())
 
 
-@decorators.runFirst("split_selection_into_lines")
+@decorators.run_first("split_selection_into_lines")
 def replace(view, what, with_this):
     with in_one_edit(view) as edit:
         for r in view.sel():
