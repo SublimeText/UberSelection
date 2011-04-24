@@ -23,8 +23,11 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
             self.on_done(self.view, command)
 
     def show_input_panel(self, edit):
-        self.view.window().show_input_panel("Uberselection CMD", getattr(self.view, 'last_cmd_line', ''),
-                                        functools.partial(self.on_done, edit), None, None)
+        self.view.window().show_input_panel(
+                                "UberSelection:",
+                                getattr(self, 'last_cmd_line', ''),
+                                functools.partial(self.on_done, edit),
+                                None, None)
 
     def on_done(self, edit, s):
 
@@ -32,16 +35,19 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
         try:
             tokens = self.grammar.parseString(s)
         except pyparsing.ParseException:
-            sublime.status_message("Uberselection: Invalid command string.")
+            sublime.status_message(
+                            "[ERROR] UberSelection: Invalid command string.")
             return
 
         if tokens.vim_cmd:
-            vimactions.dispatch(self.view, tokens.vim_cmd[0], *tokens.vim_cmd[1])
-            # Return now because we don't want to show input panel again.
+            vimactions.dispatch(self.view,
+                                tokens.vim_cmd[0], *tokens.vim_cmd[1])
+            # Avoids showing input panel again.
             return
 
         elif tokens.complex_cmd:
-            selection.selectSpanningLines(parseRange(tokens.complex_cmd.range), self.view)
+            selection.selectSpanningLines(parseRange(tokens.complex_cmd.range),
+                                            self.view)
             for cmd in tokens.complex_cmd:
                 if cmd[0] == "V":
                     actions.include(self.view, cmd[1], cmd[2])
@@ -52,13 +58,14 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
         elif tokens.range:
             selection.selectSpanningLines(parseRange(tokens.range), self.view)
         elif tokens.cmd:
-            selection.selectSpanningLines(parseRange(self.grammar.parseString(".").range), self.view)
+            selection.selectSpanningLines(
+                                parseRange(self.grammar.parseString(".").range),
+                                self.view)
             for cmd in tokens.cmd:
                 if cmd[0] == "s":
                     actions.replace(self.view, cmd[2][0], cmd[3][0])
         else:
-            sublime.status_message("Uberselection: Unknown command.")
-
+            sublime.status_message("[ERROR] UberSelection: Unknown command.")
 
         self.show_input_panel(self.view)
 
@@ -69,9 +76,12 @@ def parseRange(r):
         y, offset_y = "$", "0"
     else:
         x, offset_x = r.a.value, r.a.offset
-        y, offset_y = (x, offset_x) if not hasattr(r.b, "value") else (r.b.value, r.b.offset)
-
+        y, offset_y = (x, offset_x) if not hasattr(r.b, "value") else (
+                                                                    r.b.value,
+                                                                    r.b.offset
+                                                                    )
     return parseRangePart(x) + int(offset_x), parseRangePart(y) + int(offset_y)
+
 
 def parseRangePart(p):
     if p.isdigit():
