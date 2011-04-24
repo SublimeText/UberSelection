@@ -45,7 +45,7 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
             return
 
         elif tokens.complex_cmd:
-            selection.selectSpanningLines(parseRange(tokens.complex_cmd.range),
+            selection.select_spanning_lines(parseRange(tokens.complex_cmd.range),
                                             self.view)
             for cmd in tokens.complex_cmd:
                 if cmd[0] == "V":
@@ -55,9 +55,9 @@ class UberSelectionCommand(sublime_plugin.TextCommand):
                 if cmd[0] == "s":
                     actions.replace(self.view, cmd[2][0], cmd[3][0])
         elif tokens.range:
-            selection.selectSpanningLines(parseRange(tokens.range), self.view)
+            selection.select_spanning_lines(parseRange(tokens.range), self.view)
         elif tokens.cmd:
-            selection.selectSpanningLines(
+            selection.select_spanning_lines(
                                 parseRange(self.grammar.parseString(".").range),
                                 self.view)
             for cmd in tokens.cmd:
