@@ -1,38 +1,33 @@
+=============
 Uberselection
 =============
 
-- Description_
-- `Getting Started`_
-- Examples_
-- `Four ways to issue commands`_
-- Tokens_
-    - `Sublime commands`_
-    - `Line references`_
-    - `Text commands`_
+Make complex selections and replace text in a buffer via textual commands.
+Inspired in Vim's line-oriented ex mode.
 
-Description
-***********
-Make complex selections and replace text in a buffer via text commands.
-Inspired in Vim's ex mode.
 
 Getting Started
-***************
+===============
 
-Download and install the `latest release`_ of UberSelection.
+* Install `AAAPackageDev`_ (dependency)
+* Install `UberSelection`_
 
-Clone repository under ``sublime.packagesPath() + "\\Uberselection"``.
+.. _AAAPackageDev: https://bitbucket.org/guillermooo/uberselection/downloads/UberSelection.sublime-package
+.. _UberSelection: https://bitbucket.org/guillermooo/uberselection/downloads/UberSelection.sublime-package
 
-.. _latest release: https://bitbucket.org/guillermooo/uberselection/downloads/UberSelection.sublime-package
+If you're running a full installation, simply doubleclick on the `.sublime-package` files.
+If you're running a portable installation, perform an `installation by hand`_.
 
-Install AAAPackageDev (dependency).
+.. _installation by hand: http://sublimetext.info/docs/extensibility/packages.html#installation-of-packages-with-sublime-package-archives
 
 Usage
-*****
-#. Run from Sublime's console with ``view.runCommand("uberSelection")``.
-#. Issue command as explained below.
+=====
+
+#. Run from Sublime's console with ``view.run_command("uber_selection")``
+#. Issue command as explained further below
 
 Examples
-********
+========
 
 ``10,20V/this/``
     Select lines containing ``this`` between lines 10 and 20 (inclusive).
@@ -44,21 +39,23 @@ Examples
 ``%s/this/that/``
     Replace ``this`` with ``that`` in the whole file.
 
-Four ways to issue commands
-***************************
+Four Ways of Issuing Commands
+=============================
 
-1. ``<SUBLIME COMMAND>[ <ARG>]``
-2. ``<LINE REF>[,<LINE REF>]``
-3. ``<BUFFER COMMAND>[;<BUFFER COMMAND>]*``
-4. ``<LINE REF><BUFFER COMMAND>[;<BUFFER COMMAND>]*``
+#. ``<SUBLIME COMMAND>[ <ARG>]``
+#. ``<LINE REF>[,<LINE REF>]``
+#. ``<BUFFER COMMAND>[;<BUFFER COMMAND>]*``
+#. ``<LINE REF><BUFFER COMMAND>[;<BUFFER COMMAND>]*``
 
 All tokens are explained in the following sections
 
 Tokens
-******
+======
 
-Sublime commands
-----------------
+Sublime Commands
+****************
+
+(Not all commands work.)
 
 ``w [arg]``
     Save the active buffer. If you pass an arg to it, the Save As dialog will
@@ -80,11 +77,10 @@ Sublime commands
 ``N``
     Previous view.
 
+Line References
+***************
 
-Line references
----------------
-
-Designates lines or ranges of lines in the active view.
+Select lines or ranges of lines in the active view.
 
 ``[1-9]+``
     Designates line by number.
@@ -98,25 +94,36 @@ Designates lines or ranges of lines in the active view.
 ``%``
     Designates all lines in the view.
 
+``/what/``
+    Looks forwards to find first line matching ``what`` or returns current line
+    if none found.
+
+``?what?``
+    Looks backwards to find first line matching ``what`` or returns current
+    line if none found.
+
 You can also specify offsets with ``[+-][1-9]+``.
 
-In order to designate a range, use two comma separated line references.
+In order to designate a range, use two comma separated line references::
 
-Text commands
--------------
+    .+5,/end$/-3
+
+Text Commands
+*************
 
 Select lines and perform replacements in the view.
 
 ``V/what/<flags>``
     Selects all lines containing ``what``. Case insensitive by default. Use the
-    flag ``c`` to make a case-sensitive search. By default, searches are case
-    insensitive.
+    flag ``c`` to make a case-sensitive search.
 
 ``-V/what/<flags>``
     Same as above, but excludes the lines matching ``what``.
 
 ``s/what/with/``
-    Replaces all instances of ``what`` with ``with``.
-    The separator ``/`` can be any of: ``! $ % & = / : ;``
+    Replaces all instances of ``what`` with ``with``. Case sensitive.
+    The separator ``/`` can be substituted by any of: ``! $ % & = / : ;``
 
-You can chain commands by separating them with a semicolon (``;``).
+You can chain commands by separating them with a semicolon (``;``)::
+
+    .+5,/end$/-3V/foo/;-V/bar/;s/foo/BOO!/
